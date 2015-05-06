@@ -202,7 +202,14 @@
         if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)) {//&& (sourceType == UIImagePickerControllerSourceTypePhotoLibrary)) {
             self.popoverController = [self makePopoverController:self.imagePickerController];
             self.popoverController.delegate = self;
-            
+
+            //jjr: Bug fix for iOS 8 issue on iPad where was getting "Warning: Attempt to present <UIImagePickerController: 0x7fc16280d000>
+            //         on <ImageUploadViewController: 0x7fc160d57940> which is already presenting (null)" error.
+			//     We need to dismiss any already-presented view controller prior to presenting the new popover.
+            if (self.delegate.presentedViewController) {
+                [self.delegate.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+            }
+
             [self.popoverController presentPopoverFromRect:CGRectMake(400, 400, 100, 100) inView:self.delegate.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
             
             /*
